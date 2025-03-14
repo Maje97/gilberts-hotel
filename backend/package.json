@@ -2,6 +2,7 @@
   "name": "hello-prisma",
   "license": "MIT",
   "scripts": {
+    "dev": "ts-node ./src/server.ts",
     "queries": "ts-node ./src/queries.ts",
     "caching": "ts-node ./src/caching.ts",
     "realtime": "ts-node ./src/realtime.ts"
@@ -11,9 +12,14 @@
     "@prisma/extension-accelerate": "1.2.2",
     "@prisma/extension-pulse": "1.2.2",
     "@types/node": "22.13.8",
-    "dotenv": "16.4.7"
+    "bcryptjs": "^3.0.2",
+    "dotenv": "16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.9",
     "prisma": "6.4.1",
     "ts-node": "10.9.2",
     "typescript": "5.7.3"
