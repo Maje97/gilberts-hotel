@@ -1,3 +1,6 @@
+// https://cdn.pixabay.com/photo/2016/04/15/11/43/hotel-1330834_1280.jpg
+// https://cdn.pixabay.com/photo/2020/10/18/09/16/bedroom-5664221_1280.jpg
+// https://cdn.pixabay.com/photo/2021/12/18/06/00/room-6878004_1280.jpg
 
 export default function About() {
     return (
