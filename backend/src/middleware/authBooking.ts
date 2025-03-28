@@ -41,3 +41,11 @@ export function authBooking(requiredPermissions: Permission[]) {
         next();
     };
 }
+
+/*
+export function authBookingView(role: Role) {
+    return (req: any, res: Response, next: NextFunction): void => {
+
+    };
+}
+*/
