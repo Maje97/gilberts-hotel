@@ -32,6 +32,13 @@ export interface Room {
     bookings: Booking[]
 }
 
+export interface RoomData {
+    image: string
+    name: string
+    capacity: number
+    type?: Type
+}
+
 // Modified/custom interfaces
 
 export interface UserWithoutPassword extends Omit<User, 'password'> {}

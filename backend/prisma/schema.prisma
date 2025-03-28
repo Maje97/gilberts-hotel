@@ -26,10 +26,10 @@ model Room {
 
 model Booking {
   id          Int     @id @default(autoincrement())
-  room        Room    @relation(fields: [roomId], references: [id])
-  user        User    @relation(fields: [userId], references: [id])
-  roomId      Int
-  userId      Int
+  room        Room?   @relation(fields: [roomId], references: [id])
+  user        User?   @relation(fields: [userId], references: [id])
+  roomId      Int?
+  userId      Int?
   startTime   DateTime
   endTime     DateTime
 }

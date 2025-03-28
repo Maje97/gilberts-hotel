@@ -10,7 +10,7 @@ dotenv.config();
 const router = express.Router();
 
 //Register new user
-router.post("/register", async (req, res) => {
+router.post("/", async (req, res) => {
   const { username, password } = req.body as UserCredentials;
   const hashedPassword = bcrypt.hashSync(password, 10);
 
