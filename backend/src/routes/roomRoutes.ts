@@ -1,13 +1,13 @@
 import express from 'express';
 import prisma from '../prismaClient';
 import { HttpStatus } from "../httpStatus";
-import { authRoom } from '../middleware/authRoom'; //Work in progress
+import { auth } from '../middleware/auth'; //Work in progress
 import { RoomData, Room } from '../interfaces';
 
 const router = express.Router();
 
 //Create a room
-router.post("/", /*authRoom(['create']),*/ async (req, res) => {
+router.post("/", auth(['create']), async (req, res) => {
     const {image, name, capacity, type} = req.body as RoomData;
 
     try {
@@ -27,7 +27,7 @@ router.post("/", /*authRoom(['create']),*/ async (req, res) => {
 });
 
 //Get all rooms
-router.get("/", /*authRoom(['read']),*/ async (req, res) => {
+router.get("/", auth(['read']), async (req, res) => {
     try {
         const rooms = await prisma.room.findMany();
         res.status(HttpStatus.OK).json({ rooms });
@@ -38,7 +38,7 @@ router.get("/", /*authRoom(['read']),*/ async (req, res) => {
 });
 
 //Update a room
-router.patch("/:id", /*authRoom(['update']),*/ async (req, res) => {
+router.patch("/:id", auth(['update']), async (req, res) => {
     const id = Number(req.params.id);
     const {image, name, capacity, type} = req.body as RoomData;
 
@@ -62,7 +62,7 @@ router.patch("/:id", /*authRoom(['update']),*/ async (req, res) => {
 });
 
 //Delete a room
-router.delete("/:id", /*authRoom(['delete']),*/ async (req, res) => {
+router.delete("/:id", auth(['delete']), async (req, res) => {
     const id = Number(req.params.id);
 
     try {

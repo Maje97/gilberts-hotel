@@ -22,9 +22,9 @@ router.post("/", async (req, res) => {
       },
     });
     const token = jwt.sign(
-        { username: user.username, role: user.role } as CustomJwtPayload, 
+        { id: user.id, role: user.role } as CustomJwtPayload, 
         process.env.JWT_SECRET as string, {
-        expiresIn: "1h",
+        expiresIn: "6h",
     });
     res.status(HttpStatus.CREATED).json({ id: user.id, token: token });
   } catch (err) {
@@ -60,9 +60,9 @@ router.post("/login", async (req, res) => {
     }
 
     const token = jwt.sign(
-      { username: storedUser.username, role: storedUser.role } as CustomJwtPayload,
+      { id: storedUser.id, role: storedUser.role } as CustomJwtPayload,
       process.env.JWT_SECRET as string,
-      { expiresIn: "1h" }
+      { expiresIn: "6h" }
     );
     res.status(HttpStatus.OK).json({ token });
   } catch (err) {

@@ -9,7 +9,7 @@ type RolesWithPermissions = {
     [role in Role]: Permission[];
 };
 
-export function authBooking(requiredPermissions: Permission[]) {
+export function auth(requiredPermissions: Permission[]) {
     return (req: any, res: Response, next: NextFunction): void => {
         const RolePermissions: RolesWithPermissions = {
             [Role.ADMIN]: ['create', 'read', 'update', 'delete'],
@@ -41,11 +41,3 @@ export function authBooking(requiredPermissions: Permission[]) {
         next();
     };
 }
-
-/*
-export function authBookingView(role: Role) {
-    return (req: any, res: Response, next: NextFunction): void => {
-
-    };
-}
-*/

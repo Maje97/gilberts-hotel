@@ -58,6 +58,6 @@ export interface UserWithoutPassword extends Omit<User, 'password'> {}
 export interface CreateUser extends Omit<User, 'id'> {}
 
 export interface CustomJwtPayload {
-    username: string
+    id: number
     role: Role
 }
