@@ -2,6 +2,11 @@ import {NextFunction, Response} from "express";
 import {Role} from "@prisma/client";
 import { CustomJwtPayload } from "../interfaces";
 import { HttpStatus } from "../httpStatus";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config();
+const secret = process.env.JWT_SECRET as string
 
 type Permission = 'create' | 'read' | 'update' | 'delete'
 
@@ -11,11 +16,23 @@ type RolesWithPermissions = {
 
 export function auth(requiredPermissions: Permission[]) {
     return (req: any, res: Response, next: NextFunction): void => {
+        const token = req.header('Authorization')?.split(' ')[1];
+        if (!token) { 
+            res.status(HttpStatus.NOT_AUTHENTICATED).send('No token was recieved.');
+            return
+        }
+            
+        const payload = jwt.verify(token, secret) as CustomJwtPayload;
+        if (!payload) {
+            res.status(HttpStatus.NOT_AUTHENTICATED).send('Token is not valid')
+            return
+        }
+        
         const RolePermissions: RolesWithPermissions = {
             [Role.ADMIN]: ['create', 'read', 'update', 'delete'],
             [Role.USER]: ['read'],
         };
-        const {role} = req.jwtPayload as CustomJwtPayload
+        const {role} = payload as CustomJwtPayload
         const userPermissions = RolePermissions[role];
 
         // Skip authorization if admin.

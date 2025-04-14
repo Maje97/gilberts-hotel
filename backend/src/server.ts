@@ -12,7 +12,6 @@ const port = process.env.PORT;
 
 //Middlewares
 app.use(express.json());
-app.use(userFromToken);
 
 //Routes
 app.use('/user', userRoutes);
