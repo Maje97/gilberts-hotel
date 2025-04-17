@@ -18,14 +18,14 @@ const origin = process.env.CLIENT_ORIGIN;
 
 const io = new Server(server, { 
     cors: {
-        origin: "http://localhost:5173"
+        origin: origin
     }
 });
 
 setupSocket(io);
 
 //Middlewares
-app.use(cors());
+app.use(cors({ origin: "http://localhost:5173/" }));
 app.use(express.json());
 
 // Save io to use in routes or services
