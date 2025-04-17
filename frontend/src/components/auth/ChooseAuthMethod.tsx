@@ -43,7 +43,7 @@ export default function ChooseAuthMethod() {
                 <h2 className="text-xl font-semibold mb-4">Login</h2>
                 <input type="text" id="lusername" placeholder="Username" onChange={e => setUsername(e.target.value)} />
                 <input type="text" id="lpassword" placeholder="Password" onChange={e => setPassword(e.target.value)} />
-                <Button variant="primary" isLoading={isLoading} onClick={() => fetchData('http://localhost:8080/user/login')}>Login</Button>
+                <Button variant="primary" isLoading={isLoading} onClick={() => fetchData('https://gilberts-hotel-673663b70f08.herokuapp.com/user/login')}>Login</Button>
                 <Button variant="tertiary" onClick={() => setMethod("")}>Back</Button>
             </div>
         );
@@ -53,7 +53,7 @@ export default function ChooseAuthMethod() {
                 <h2 className="text-xl font-semibold mb-4">Register</h2>
                 <input type="text" id="rusername" placeholder="Username" onChange={e => setUsername(e.target.value)} />
                 <input type="text" id="rpassword" placeholder="Password" onChange={e => setPassword(e.target.value)} />
-                <Button variant="primary" isLoading={isLoading} onClick={() => fetchData('http://localhost:8080/user')}>Register</Button>
+                <Button variant="primary" isLoading={isLoading} onClick={() => fetchData('https://gilberts-hotel-673663b70f08.herokuapp.com/user')}>Register</Button>
                 <Button variant="tertiary" onClick={() => setMethod("")}>Back</Button>
             </div>
         );

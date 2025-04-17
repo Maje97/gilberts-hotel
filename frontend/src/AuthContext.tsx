@@ -1,5 +1,4 @@
 import { createContext, useState, ReactNode, useEffect } from 'react';
-import { useNavigate } from "react-router";
 
 type AuthContextType = {
     role: string | null;
@@ -14,7 +13,6 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [token, setToken] = useState<string | null>(null);
     const [role, setRole] = useState<string | null>(null);
-    const navigate = useNavigate();
 
     useEffect(() => {
         const storedToken = localStorage.getItem('authToken');
@@ -39,7 +37,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setRole(null);
         localStorage.removeItem('authToken');
         localStorage.removeItem('authRole');
-        navigate('/');
     };
 
     return (
