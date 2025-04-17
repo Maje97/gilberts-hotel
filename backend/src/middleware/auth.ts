@@ -1,4 +1,4 @@
-import {NextFunction, Response} from "express";
+import {NextFunction, Request, Response} from "express";
 import {Role} from "@prisma/client";
 import { CustomJwtPayload } from "../interfaces";
 import { HttpStatus } from "../httpStatus";
@@ -15,7 +15,7 @@ type RolesWithPermissions = {
 };
 
 export function auth(requiredPermissions: Permission[]) {
-    return (req: any, res: Response, next: NextFunction): void => {
+    return (req: Request, res: Response, next: NextFunction): void => {
         const token = req.headers['authorization'];
         if (!token) { 
             res.status(HttpStatus.NOT_AUTHENTICATED).send('No token was recieved.');
