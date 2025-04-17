@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import prisma from "../prismaClient";
@@ -10,7 +10,7 @@ dotenv.config();
 const router = express.Router();
 
 //Register new user
-router.post("/", async (req, res) => {
+router.post("/", async (req: Request, res: Response) => {
   const { username, password } = req.body as UserCredentials;
   const hashedPassword = bcrypt.hashSync(password, 10);
 
@@ -34,7 +34,7 @@ router.post("/", async (req, res) => {
 });
 
 //Login user
-router.post("/login", async (req, res) => {
+router.post("/login", async (req: Request, res: Response) => {
   const credentials = req.body as UserCredentials;
 
   try {

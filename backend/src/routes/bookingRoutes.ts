@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import prisma from '../prismaClient';
 import { HttpStatus } from "../httpStatus";
 import { authBookingFilter } from '../middleware/authBookingFilter'; //Work in progress
@@ -9,7 +9,7 @@ import { userSocketMap } from '../socket';
 const router = express.Router();
 
 //Create a booking
-router.post("/", auth(['create']), async (req, res) => {
+router.post("/", auth(['create']), async (req: Request, res: Response) => {
     const {room, user, startTime, endTime} = req.body as BookingData;
 
     try {
@@ -34,7 +34,7 @@ router.post("/", auth(['create']), async (req, res) => {
 });
 
 //Get bookings
-router.get("/:id", auth(['read']), async (req, res) => {
+router.get("/:id", auth(['read']), async (req: Request, res: Response) => {
     const id = Number(req.params.id);
 
     try {
@@ -50,7 +50,7 @@ router.get("/:id", auth(['read']), async (req, res) => {
     }
 });
 
-router.get("/filter", auth(['read']), /*authBookingFilter,*/ async (req, res) => {
+router.get("/filter", auth(['read']), /*authBookingFilter,*/ async (req: Request, res: Response) => {
     const {room, user} = req.body as BookingFilter;
 
     try {
@@ -76,7 +76,7 @@ router.get("/filter", auth(['read']), /*authBookingFilter,*/ async (req, res) =>
 });
 
 //Edit a booking
-router.patch("/:id", auth(['update']), async (req, res) => {
+router.patch("/:id", auth(['update']), async (req: Request, res: Response) => {
     const id = Number(req.params.id);
     const {room, user, startTime, endTime} = req.body as BookingData;
 
@@ -104,7 +104,7 @@ router.patch("/:id", auth(['update']), async (req, res) => {
 });
 
 //Delete a booking
-router.delete("/:id", auth(['delete']), async (req, res) => {
+router.delete("/:id", auth(['delete']), async (req: Request, res: Response) => {
     const id = Number(req.params.id);
 
     try {
