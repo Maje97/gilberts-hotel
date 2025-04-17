@@ -26,7 +26,7 @@ router.post("/", async (req, res) => {
         process.env.JWT_SECRET as string, {
         expiresIn: "6h",
     });
-    res.status(HttpStatus.CREATED).json({ id: user.id, token: token });
+    res.status(HttpStatus.CREATED).json({ role: user.role, token });
   } catch (err) {
     console.log(err);
     res.status(HttpStatus.SERVICE_UNAVAILABLE);
@@ -44,7 +44,7 @@ router.post("/login", async (req, res) => {
       },
     });
     if (!storedUser) {
-      res.status(HttpStatus.NOT_FOUND).send({ message: "User not found" });
+      res.status(HttpStatus.NOT_FOUND).json({ message: "User not found" });
       return;
     }
 
@@ -55,7 +55,7 @@ router.post("/login", async (req, res) => {
     if (!comparePassword) {
       res
         .status(HttpStatus.NOT_AUTHORIZED)
-        .send({ message: "Invalid password" });
+        .json({ message: "Invalid password" });
       return;
     }
 
@@ -64,7 +64,7 @@ router.post("/login", async (req, res) => {
       process.env.JWT_SECRET as string,
       { expiresIn: "6h" }
     );
-    res.status(HttpStatus.OK).json({ token });
+    res.status(HttpStatus.OK).json({ role: storedUser.role, token });
   } catch (err) {
     console.log(err);
     res.status(HttpStatus.SERVICE_UNAVAILABLE);

@@ -12,9 +12,11 @@
     "@prisma/extension-pulse": "1.2.2",
     "@types/node": "22.13.8",
     "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
     "dotenv": "16.4.7",
     "express": "^4.21.2",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "socket.io": "^4.8.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",

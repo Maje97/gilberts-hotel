@@ -4,6 +4,7 @@ import { HttpStatus } from "../httpStatus";
 import { authBookingFilter } from '../middleware/authBookingFilter'; //Work in progress
 import { BookingData, BookingFilter } from '../interfaces';
 import { auth } from '../middleware/auth';
+import { userSocketMap } from '../socket';
 
 const router = express.Router();
 
@@ -20,6 +21,11 @@ router.post("/", auth(['create']), async (req, res) => {
                 endTime
             }
         })
+        const socketId = userSocketMap[user];
+
+        if(socketId) {
+            req.app.get('io').to(socketId).emit('booking-created', { booking });
+        }
         res.status(HttpStatus.CREATED).json({ booking });
     } catch (err) {
         console.log(err);
@@ -86,6 +92,10 @@ router.patch("/:id", auth(['update']), async (req, res) => {
                 endTime
             }
         });
+        const socketId = userSocketMap[user];
+        if (socketId) {
+            req.app.get('io').to(socketId).emit('booking-updated', { message: 'Successfully updated booking.' });
+        }
         res.status(HttpStatus.OK).send({ message: 'Successfully updated booking.' });
     } catch (err) {
         console.log(err);
