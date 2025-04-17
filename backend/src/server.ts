@@ -25,7 +25,7 @@ const io = new Server(server, {
 setupSocket(io);
 
 //Middlewares
-app.use(cors({ origin: "http://localhost:5173/" }));
+app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json());
 
 // Save io to use in routes or services
