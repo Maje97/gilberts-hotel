@@ -1,4 +1,5 @@
 import { createContext, useState, ReactNode, useEffect } from 'react';
+import { registerSocket } from "./socket";
 
 type User = {
     id: number;
@@ -24,11 +25,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (storedUser) {
             const userInfoParsed = JSON.parse(storedUser);
             setUser(userInfoParsed);
+            registerSocket(userInfoParsed.id);
         }
     }, []);
 
     const login = (newUser: User) => {
         setUser(newUser);
+        registerSocket(newUser.id);
         const userInfoStringified = JSON.stringify(newUser);
         localStorage.setItem('authUser', userInfoStringified);
     };

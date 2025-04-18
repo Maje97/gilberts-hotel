@@ -39,7 +39,7 @@ export default function ChooseAuthMethod() {
 
     if (method === "login") {
         return (
-            <div className="flex flex-col w-64 p-4 space-y-2 items-center border-2 border-black">
+            <div className={`flex flex-col w-64 p-4 space-y-2 items-center border-2 border-black ${isLoading && "cursor-progress"}`}>
                 <h2 className="text-xl font-semibold mb-4">Login</h2>
                 <input type="text" id="lusername" placeholder="Username" onChange={e => setUsername(e.target.value)} />
                 <input type="text" id="lpassword" placeholder="Password" onChange={e => setPassword(e.target.value)} />

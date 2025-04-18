@@ -9,15 +9,15 @@ import RoomList from './pages/RoomList';
 import Room from './pages/Room';
 import BookingList from './pages/BookingList';
 import Booking from './pages/Booking';
-//import socket from "./socket";
+import socket from "./socket";
 
-/* socket.on("booking-created", (data) => {
+socket.on("booking-created", (data) => {
   console.log("New booking:", data);
 });
 
 socket.on("booking-updated", (data) => {
   console.log("Booking updated:", data);
-}); */
+});
 
 const RedirectRoute = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
