@@ -37,6 +37,6 @@ app.use('/user', userRoutes);
 app.use('/room', roomRoutes);
 app.use('/booking', bookingRoutes);
 
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`Server has started on port: ${port}`);
 });
