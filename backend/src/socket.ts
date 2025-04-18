@@ -10,6 +10,7 @@ export const setupSocket = (io: Server) => {
         if (userId) {
           userSocketMap[userId] = socket.id;
           console.log(`Registered user ${userId} with socket ${socket.id}`);
+          io.emit('login', `Registered user ${userId} with socket ${socket.id}`);
         }
       });
   
