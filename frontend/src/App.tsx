@@ -1,25 +1,38 @@
 import { Route, Routes, Navigate } from 'react-router';
+import { useAuth } from './hooks/useAuth';
+import { ReactNode } from 'react';
 import Layout from './pages/Layout';
 import Login from './pages/Login';
 import About from './pages/About';
-import { useAuth } from './hooks/useAuth';
-import { ReactNode } from 'react';
-import Dashboard from './pages/Dashboard';
+import Home from './pages/Home';
+import RoomList from './pages/RoomList';
+import Room from './pages/Room';
+import BookingList from './pages/BookingList';
+import Booking from './pages/Booking';
 //import socket from "./socket";
 
-/*
-socket.on("booking-created", (data) => {
+/* socket.on("booking-created", (data) => {
   console.log("New booking:", data);
 });
 
 socket.on("booking-updated", (data) => {
   console.log("Booking updated:", data);
-});
-*/
-const ProtectedRoute = ({ children }: { children: ReactNode }) => {
-  const { token } = useAuth();
+}); */
 
-  if (!token) {
+const RedirectRoute = ({ children }: { children: ReactNode }) => {
+  const { user } = useAuth();
+
+  if (user) {
+    return <Navigate to="/home" replace />;
+  }
+
+  return children;
+};
+
+const ProtectedRoute = ({ children }: { children: ReactNode }) => {
+  const { user } = useAuth();
+
+  if (!user) {
     return <Navigate to="/" replace />;
   }
 
@@ -29,10 +42,14 @@ const ProtectedRoute = ({ children }: { children: ReactNode }) => {
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Login />} />
-      <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/about" element={<About />} />
+      <Route element={<Layout />}>
+        <Route path="/" element={<RedirectRoute><Login /></RedirectRoute>} />
+        <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+        <Route path="/about" element={<ProtectedRoute><About /></ProtectedRoute>} />
+        <Route path="/rooms" element={<ProtectedRoute><RoomList /></ProtectedRoute>} />
+        <Route path="/rooms/:id" element={<ProtectedRoute><Room /></ProtectedRoute>} />
+        <Route path="/bookings" element={<ProtectedRoute><BookingList /></ProtectedRoute>} />
+        <Route path="/bookings/:id" element={<ProtectedRoute><Booking /></ProtectedRoute>} />
       </Route>
     </Routes>
   )

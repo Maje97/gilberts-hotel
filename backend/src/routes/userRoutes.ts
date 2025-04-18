@@ -26,7 +26,12 @@ router.post("/", async (req: Request, res: Response) => {
         process.env.JWT_SECRET as string, {
         expiresIn: "6h",
     });
-    res.status(HttpStatus.CREATED).json({ role: user.role, token });
+    res.status(HttpStatus.CREATED).json({ 
+      id: user.id, 
+      username, 
+      role: user.role, 
+      token 
+    });
   } catch (err) {
     console.log(err);
     res.status(HttpStatus.SERVICE_UNAVAILABLE);
@@ -64,7 +69,12 @@ router.post("/login", async (req: Request, res: Response) => {
       process.env.JWT_SECRET as string,
       { expiresIn: "6h" }
     );
-    res.status(HttpStatus.OK).json({ role: storedUser.role, token });
+    res.status(HttpStatus.OK).json({ 
+      id: storedUser.id, 
+      username: storedUser.username, 
+      role: storedUser.role, 
+      token 
+    });
   } catch (err) {
     console.log(err);
     res.status(HttpStatus.SERVICE_UNAVAILABLE);

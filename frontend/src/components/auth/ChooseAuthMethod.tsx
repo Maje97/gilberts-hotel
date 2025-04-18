@@ -26,9 +26,9 @@ export default function ChooseAuthMethod() {
 
             const data = await response.json();
             console.log('Login successful:', data);
-            if (data.role && data.token) {
-                login(data.role, data.token);
-                navigate('/dashboard');
+            if (data.id && data.username && data.role && data.token) {
+                login(data);
+                navigate('/home');
             }
         } catch (error) {
             console.error('Fetch error:', error);
