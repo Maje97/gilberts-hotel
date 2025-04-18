@@ -5,7 +5,6 @@ import prisma from "../prismaClient";
 import dotenv from "dotenv";
 import { User, UserCredentials, CustomJwtPayload } from "../interfaces";
 import { HttpStatus } from "../httpStatus";
-import { userSocketMap } from "../socket";
 
 dotenv.config();
 const router = express.Router();
@@ -27,11 +26,7 @@ router.post("/", async (req: Request, res: Response) => {
         process.env.JWT_SECRET as string, {
         expiresIn: "6h",
     });
-    const socketId = userSocketMap[user.id];
     
-    if(socketId) {
-      req.app.get('io').to(socketId).emit('login', { token });
-    }
     res.status(HttpStatus.CREATED).json({ 
       id: user.id, 
       username, 
