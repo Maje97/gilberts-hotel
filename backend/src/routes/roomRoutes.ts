@@ -22,7 +22,7 @@ router.post("/", auth(['create']), async (req: Request, res: Response) => {
         res.status(HttpStatus.CREATED).json({ id: room.id, type: room.type });
     } catch (err) {
         console.log(err);
-        res.status(HttpStatus.SERVICE_UNAVAILABLE);
+        res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ error: 'Service unavailable' });
     }
 });
 
@@ -33,7 +33,7 @@ router.get("/", auth(['read']), async (req: Request, res: Response) => {
         res.status(HttpStatus.OK).json({ rooms });
     } catch (err) {
         console.log(err);
-        res.status(HttpStatus.SERVICE_UNAVAILABLE);
+        res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ error: 'Service unavailable' });
     }
 });
 
@@ -57,7 +57,7 @@ router.patch("/:id", auth(['update']), async (req: Request, res: Response) => {
         res.status(HttpStatus.OK).send({ message: 'Successfully updated room.' });
     } catch (err) {
         console.log(err);
-        res.status(HttpStatus.SERVICE_UNAVAILABLE);
+        res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ error: 'Service unavailable' });
     }
 });
 
@@ -74,7 +74,7 @@ router.delete("/:id", auth(['delete']), async (req: Request, res: Response) => {
         res.status(HttpStatus.OK).send({ message: 'Successfully deleted room.' });
     } catch (err) {
         console.log(err);
-        res.status(HttpStatus.SERVICE_UNAVAILABLE);
+        res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ error: 'Service unavailable' });
     }
 });
 

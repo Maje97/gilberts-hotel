@@ -29,7 +29,7 @@ router.post("/", auth(['create']), async (req: Request, res: Response) => {
         res.status(HttpStatus.CREATED).json({ booking });
     } catch (err) {
         console.log(err);
-        res.status(HttpStatus.SERVICE_UNAVAILABLE);
+        res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ error: 'Service unavailable' });
     }
 });
 
@@ -46,7 +46,7 @@ router.get("/:id", auth(['read']), async (req: Request, res: Response) => {
         res.status(HttpStatus.OK).json({ booking });
     } catch (err) {
         console.log(err);
-        res.status(HttpStatus.SERVICE_UNAVAILABLE);
+        res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ error: 'Service unavailable' });
     }
 });
 
@@ -71,7 +71,7 @@ router.get("/filter", auth(['read']), /*authBookingFilter,*/ async (req: Request
         res.status(HttpStatus.OK).json({ filteredBookings });
     } catch (err) {
         console.log(err);
-        res.status(HttpStatus.SERVICE_UNAVAILABLE);
+        res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ error: 'Service unavailable' });
     }
 });
 
@@ -99,7 +99,7 @@ router.patch("/:id", auth(['update']), async (req: Request, res: Response) => {
         res.status(HttpStatus.OK).send({ message: 'Successfully updated booking.' });
     } catch (err) {
         console.log(err);
-        res.status(HttpStatus.SERVICE_UNAVAILABLE);
+        res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ error: 'Service unavailable' });
     }
 });
 
@@ -116,7 +116,7 @@ router.delete("/:id", auth(['delete']), async (req: Request, res: Response) => {
         res.status(HttpStatus.OK).send({ message: 'Successfully deleted booking.' });
     } catch (err) {
         console.log(err);
-        res.status(HttpStatus.SERVICE_UNAVAILABLE);
+        res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ error: 'Service unavailable' });
     }
 });
 

@@ -35,7 +35,7 @@ router.post("/", async (req: Request, res: Response) => {
     });
   } catch (err) {
     console.log(err);
-    res.status(HttpStatus.SERVICE_UNAVAILABLE);
+    res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ error: 'Service unavailable' });
   }
 });
 
@@ -78,7 +78,7 @@ router.post("/login", async (req: Request, res: Response) => {
     });
   } catch (err) {
     console.log(err);
-    res.status(HttpStatus.SERVICE_UNAVAILABLE);
+    res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ error: 'Service unavailable' });
   }
 });
 
