@@ -20,16 +20,16 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             primary: `inline-flex items-center justify-center space-x-2 h-${sizeClassName[size]} 
                 py-2.5 px-5 rounded-lg text-neutral-500 bg-amber-300 border-2 border-neutral-500
                 disabled:opacity-50 hover:text-black hover:border-black
-                hover:cursor-pointer disabled:cursor-not-allowed ${isLoading && "cursor-progress"}`,
+                hover:cursor-pointer disabled:cursor-not-allowed ${isLoading && "cursor-progress hover:cursor-progress"}`,
             secondary: `inline-flex items-center justify-center space-x-2 h-${sizeClassName[size]}
                 py-2.5 px-5 rounded-lg text-gray-900
                 bg-white border border-gray-200
                 hover:bg-gray-100 hover:border-gray-400 disabled:opacity-50 
-                hover:cursor-pointer disabled:cursor-not-allowed ${isLoading && "cursor-progress"}`,
+                hover:cursor-pointer disabled:cursor-not-allowed ${isLoading && "cursor-progress hover:cursor-progress"}`,
             tertiary: `inline-flex items-center justify-center space-x-2 h-${sizeClassName[size]}
                 py-2.5 px-5 rounded-lg
                 text-blue-400 disabled:opacity-50 
-                hover:cursor-pointer disabled:cursor-not-allowed ${isLoading && "cursor-progress"}`,
+                hover:cursor-pointer disabled:cursor-not-allowed ${isLoading && "cursor-progress hover:cursor-progress"}`,
         };
 
         return (
