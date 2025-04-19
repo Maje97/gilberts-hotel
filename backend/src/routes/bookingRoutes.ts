@@ -1,15 +1,16 @@
 import express, { Request, Response } from 'express';
 import prisma from '../utils/prismaClient';
 import { HttpStatus } from "../utils/httpStatus";
-import { authBookingFilter } from '../middleware/authBookingFilter'; //Work in progress
-import { BookingData, BookingFilter } from '../utils/interfaces';
-import { auth } from '../middleware/auth';
+import { BookingData } from '../utils/interfaces';
 import { userSocketMap } from '../utils/socket';
+import { authBooking } from '../middleware/authBooking';
+import { Role } from '@prisma/client';
+import { authBookingOwner } from '../middleware/authBookingOwner';
 
 const router = express.Router();
 
 //Create a booking
-router.post("/", auth(['create']), async (req: Request, res: Response) => {
+router.post("/", authBooking(['create']), async (req: Request, res: Response) => {
     const {room, user, startTime, endTime} = req.body as BookingData;
 
     try {
@@ -24,7 +25,9 @@ router.post("/", auth(['create']), async (req: Request, res: Response) => {
         const socketId = userSocketMap[user];
 
         if(socketId) {
-            req.app.get('io').to(socketId).emit('booking-created', { booking });
+            req.app.get('io').to(socketId).emit('booking-created', { 
+                message: `Your booking with id ${booking.id} has been created.` 
+            });
         }
         res.status(HttpStatus.CREATED).json({ booking });
     } catch (err) {
@@ -37,10 +40,10 @@ router.post("/", auth(['create']), async (req: Request, res: Response) => {
 });
 
 //Get all bookings if admin, get your own bookings if user.
-router.get("/", auth(['read']), async (req: Request, res: Response) => {
+router.get("/", authBooking(['read']), async (req: Request, res: Response) => {
     
     try {
-        if (res.locals.role === "ADMIN") {
+        if (res.locals.role === Role.ADMIN) {
             const bookings = await prisma.booking.findMany();
             res.status(HttpStatus.OK).json({ bookings });
         } else {
@@ -63,26 +66,16 @@ router.get("/", auth(['read']), async (req: Request, res: Response) => {
 });
 
 //Get booking
-router.get("/:id", auth(['read']), async (req: Request, res: Response) => {
+router.get("/:id", authBookingOwner, async (req: Request, res: Response) => {
     const id = Number(req.params.id);
 
     try {
-        if (res.locals.role === "ADMIN") {
-            const booking = await prisma.booking.findUnique({
-                where: {
-                    id
-                },
-            });
-            res.status(HttpStatus.OK).json({ booking });
-        } else {
-            const booking = await prisma.booking.findUnique({
-                where: {
-                    id,
-                    userId: res.locals.id
-                },
-            });
-            res.status(HttpStatus.OK).json({ booking });
-        }
+        const booking = await prisma.booking.findUnique({
+            where: {
+                id
+            },
+        });
+        res.status(HttpStatus.OK).json({ booking });
     } catch (err) {
         console.log(err);
         res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
@@ -93,7 +86,7 @@ router.get("/:id", auth(['read']), async (req: Request, res: Response) => {
 });
 
 //Edit a booking
-router.patch("/:id", auth(['update']), async (req: Request, res: Response) => {
+router.patch("/:id", authBookingOwner, async (req: Request, res: Response) => {
     const id = Number(req.params.id);
     const {room, user, startTime, endTime} = req.body as BookingData;
 
@@ -111,7 +104,9 @@ router.patch("/:id", auth(['update']), async (req: Request, res: Response) => {
         });
         const socketId = userSocketMap[user];
         if (socketId) {
-            req.app.get('io').to(socketId).emit('booking-updated', { message: 'Successfully updated booking.' });
+            req.app.get('io').to(socketId).emit('booking-updated', { 
+                message: `Successfully updated booking with id ${id}.` 
+            });
         }
         res.status(HttpStatus.OK).json({ message: 'Successfully updated booking.' });
     } catch (err) {
@@ -124,7 +119,7 @@ router.patch("/:id", auth(['update']), async (req: Request, res: Response) => {
 });
 
 //Delete a booking
-router.delete("/:id", auth(['delete']), async (req: Request, res: Response) => {
+router.delete("/:id", authBookingOwner, async (req: Request, res: Response) => {
     const id = Number(req.params.id);
 
     try {
@@ -133,6 +128,14 @@ router.delete("/:id", auth(['delete']), async (req: Request, res: Response) => {
                 id
             }
         });
+
+        const socketId = userSocketMap[res.locals.id];
+        if (socketId) {
+            req.app.get('io').to(socketId).emit('booking-deleted', { 
+                message: `Successfully deleted booking with id ${id}.` 
+            });
+        }
+
         res.status(HttpStatus.OK).json({ message: 'Successfully deleted booking.' });
     } catch (err) {
         console.log(err);

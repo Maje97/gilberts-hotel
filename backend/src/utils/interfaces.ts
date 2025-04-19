@@ -17,11 +17,6 @@ export interface BookingData {
     endTime: Date 
 }
 
-export interface BookingFilter {
-    room: number
-    user: number
-}
-
 export interface User {
     id: number
     username: string
