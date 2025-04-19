@@ -1,10 +1,10 @@
 import express, { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import prisma from "../prismaClient";
+import prisma from "../utils/prismaClient";
 import dotenv from "dotenv";
-import { User, UserCredentials, CustomJwtPayload } from "../interfaces";
-import { HttpStatus } from "../httpStatus";
+import { User, UserCredentials, CustomJwtPayload } from "../utils/interfaces";
+import { HttpStatus } from "../utils/httpStatus";
 
 dotenv.config();
 const router = express.Router();
@@ -15,12 +15,25 @@ router.post("/", async (req: Request, res: Response) => {
   const hashedPassword = bcrypt.hashSync(password, 10);
 
   try {
+    //Check if username is available.
+    const existingUser = await prisma.user.findUnique({
+      where: { username },
+    });
+
+    if (existingUser) {
+      return res.status(HttpStatus.CONFLICT).json({
+        error: 'Username taken',
+        message: 'This username is already in use. Please choose another one.',
+      });
+    }
+
     const user: User = await prisma.user.create({
       data: {
         username,
         password: hashedPassword,
       },
     });
+
     const token = jwt.sign(
         { id: user.id, role: user.role } as CustomJwtPayload, 
         process.env.JWT_SECRET as string, {
@@ -33,9 +46,13 @@ router.post("/", async (req: Request, res: Response) => {
       role: user.role, 
       token 
     });
+
   } catch (err) {
     console.log(err);
-    res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ error: 'Service unavailable' });
+    res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
+      error: 'Service unavailable', 
+      message: 'An error has occured. Try again later.' 
+    });
   }
 });
 
@@ -49,8 +66,12 @@ router.post("/login", async (req: Request, res: Response) => {
         username: credentials.username,
       },
     });
+
     if (!storedUser) {
-      res.status(HttpStatus.NOT_FOUND).json({ message: "User not found" });
+      res.status(HttpStatus.NOT_FOUND).json({ 
+        error: "User not found",
+        message: "User not found, check username or password." 
+      });
       return;
     }
 
@@ -61,7 +82,10 @@ router.post("/login", async (req: Request, res: Response) => {
     if (!comparePassword) {
       res
         .status(HttpStatus.NOT_AUTHORIZED)
-        .json({ message: "Invalid password" });
+        .json({ 
+          error: "Invalid password",
+          message: "Invalid password, check for possible spelling error or caps lock." 
+        });
       return;
     }
 
@@ -70,15 +94,20 @@ router.post("/login", async (req: Request, res: Response) => {
       process.env.JWT_SECRET as string,
       { expiresIn: "6h" }
     );
+
     res.status(HttpStatus.OK).json({ 
       id: storedUser.id, 
       username: storedUser.username, 
       role: storedUser.role, 
       token 
     });
+
   } catch (err) {
     console.log(err);
-    res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ error: 'Service unavailable' });
+    res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
+      error: 'Service unavailable',
+      message: "Service seems to be currently unavailable. Please try later." 
+    });
   }
 });
 

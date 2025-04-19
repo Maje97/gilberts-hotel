@@ -1,10 +1,10 @@
 import express, { Request, Response } from 'express';
-import prisma from '../prismaClient';
-import { HttpStatus } from "../httpStatus";
+import prisma from '../utils/prismaClient';
+import { HttpStatus } from "../utils/httpStatus";
 import { authBookingFilter } from '../middleware/authBookingFilter'; //Work in progress
-import { BookingData, BookingFilter } from '../interfaces';
+import { BookingData, BookingFilter } from '../utils/interfaces';
 import { auth } from '../middleware/auth';
-import { userSocketMap } from '../socket';
+import { userSocketMap } from '../utils/socket';
 
 const router = express.Router();
 
@@ -29,49 +29,66 @@ router.post("/", auth(['create']), async (req: Request, res: Response) => {
         res.status(HttpStatus.CREATED).json({ booking });
     } catch (err) {
         console.log(err);
-        res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ error: 'Service unavailable' });
+        res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
+            error: 'Service unavailable', 
+            message: 'An error has occured. Try again later.' 
+        });
     }
 });
 
-//Get bookings
+//Get all bookings if admin, get your own bookings if user.
+router.get("/", auth(['read']), async (req: Request, res: Response) => {
+    
+    try {
+        if (res.locals.role === "ADMIN") {
+            const bookings = await prisma.booking.findMany();
+            res.status(HttpStatus.OK).json({ bookings });
+        } else {
+            const bookings = await prisma.bookings.findMany({
+                where: {
+                    userId: {
+                        equals: res.locals.id
+                    } 
+                }
+            });
+            res.status(HttpStatus.OK).json({ bookings });
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
+            error: 'Service unavailable', 
+            message: 'An error has occured. Try again later.' 
+        });
+    }
+});
+
+//Get booking
 router.get("/:id", auth(['read']), async (req: Request, res: Response) => {
     const id = Number(req.params.id);
 
     try {
-        const booking = await prisma.booking.findUnique({
-            where: {
-                id
-            },
-        });
-        res.status(HttpStatus.OK).json({ booking });
+        if (res.locals.role === "ADMIN") {
+            const booking = await prisma.booking.findUnique({
+                where: {
+                    id
+                },
+            });
+            res.status(HttpStatus.OK).json({ booking });
+        } else {
+            const booking = await prisma.booking.findUnique({
+                where: {
+                    id,
+                    userId: res.locals.id
+                },
+            });
+            res.status(HttpStatus.OK).json({ booking });
+        }
     } catch (err) {
         console.log(err);
-        res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ error: 'Service unavailable' });
-    }
-});
-
-router.get("/filter", auth(['read']), /*authBookingFilter,*/ async (req: Request, res: Response) => {
-    const {room, user} = req.body as BookingFilter;
-
-    try {
-        const filteredBookings = await prisma.booking.findMany({
-            where: {
-                OR: [
-                    {
-                        room
-                    },
-                    {
-                        AND: {
-                            user
-                        }
-                    },
-                ],
-            },
+        res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
+            error: 'Service unavailable', 
+            message: 'An error has occured. Try again later.' 
         });
-        res.status(HttpStatus.OK).json({ filteredBookings });
-    } catch (err) {
-        console.log(err);
-        res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ error: 'Service unavailable' });
     }
 });
 
@@ -96,10 +113,13 @@ router.patch("/:id", auth(['update']), async (req: Request, res: Response) => {
         if (socketId) {
             req.app.get('io').to(socketId).emit('booking-updated', { message: 'Successfully updated booking.' });
         }
-        res.status(HttpStatus.OK).send({ message: 'Successfully updated booking.' });
+        res.status(HttpStatus.OK).json({ message: 'Successfully updated booking.' });
     } catch (err) {
         console.log(err);
-        res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ error: 'Service unavailable' });
+        res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
+            error: 'Service unavailable', 
+            message: 'An error has occured. Try again later.' 
+        });
     }
 });
 
@@ -113,10 +133,13 @@ router.delete("/:id", auth(['delete']), async (req: Request, res: Response) => {
                 id
             }
         });
-        res.status(HttpStatus.OK).send({ message: 'Successfully deleted booking.' });
+        res.status(HttpStatus.OK).json({ message: 'Successfully deleted booking.' });
     } catch (err) {
         console.log(err);
-        res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ error: 'Service unavailable' });
+        res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
+            error: 'Service unavailable', 
+            message: 'An error has occured. Try again later.' 
+        });
     }
 });
 

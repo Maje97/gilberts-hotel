@@ -5,8 +5,7 @@ import { Server } from "socket.io";
 import userRoutes from './routes/userRoutes';
 import roomRoutes from './routes/roomRoutes';
 import bookingRoutes from './routes/bookingRoutes';
-import { userFromToken } from './middleware/userFromToken';
-import { setupSocket } from './socket';
+import { setupSocket } from './utils/socket';
 import cors from 'cors';
 
 dotenv.config();

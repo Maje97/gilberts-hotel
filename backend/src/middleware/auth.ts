@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import {Role} from "@prisma/client";
-import { CustomJwtPayload } from "../interfaces";
-import { HttpStatus } from "../httpStatus";
+import { CustomJwtPayload } from "../utils/interfaces";
+import { HttpStatus } from "../utils/httpStatus";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
@@ -35,7 +35,9 @@ export function auth(requiredPermissions: Permission[]) {
             [Role.USER]: ['read'],
         };
 
-        const { role } = payload;
+        const { role, id } = payload;
+        res.locals.role = role;
+        res.locals.id = id;
         
         const userPermissions = RolePermissions[role];
 
