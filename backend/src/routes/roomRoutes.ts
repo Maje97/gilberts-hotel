@@ -43,6 +43,26 @@ router.get("/", auth(['read']), async (req: Request, res: Response) => {
     }
 });
 
+//Get a specific room
+router.get("/:id", auth(['read']), async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+
+    try {
+        const room = await prisma.room.findUnique({
+            where: {
+                id
+            },
+        });
+        res.status(HttpStatus.OK).json({ room });
+    } catch (err) {
+        console.log(err);
+        res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
+            error: 'Service unavailable', 
+            message: 'An error has occured. Try again later.' 
+        });
+    }
+});
+
 //Update a room
 router.patch("/:id", auth(['update']), async (req: Request, res: Response) => {
     const id = Number(req.params.id);
