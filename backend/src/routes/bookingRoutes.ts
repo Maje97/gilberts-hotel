@@ -6,6 +6,7 @@ import { userSocketMap } from '../utils/socket';
 import { authBooking } from '../middleware/authBooking';
 import { Role } from '@prisma/client';
 import { authBookingOwner } from '../middleware/authBookingOwner';
+import { userFromToken } from '../utils/userFromToken';
 
 const router = express.Router();
 
@@ -41,20 +42,26 @@ router.post("/", authBooking(['create']), async (req: Request, res: Response) =>
 
 //Get all bookings if admin, get your own bookings if user.
 router.get("/", authBooking(['read']), async (req: Request, res: Response) => {
+    const payload = await userFromToken(req);
     
     try {
-        if (res.locals.role === Role.ADMIN) {
+        if (payload?.role === Role.ADMIN) {
             const bookings = await prisma.booking.findMany();
             res.status(HttpStatus.OK).json({ bookings });
-        } else {
+        } else if (payload) {
             const bookings = await prisma.bookings.findMany({
                 where: {
                     userId: {
-                        equals: res.locals.id
+                        equals: payload.id
                     } 
                 }
             });
             res.status(HttpStatus.OK).json({ bookings });
+        } else {
+            res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
+                error: 'Service unavailable', 
+                message: 'An error has occured. Try again later.' 
+            });
         }
     } catch (err) {
         console.log(err);
@@ -121,6 +128,7 @@ router.patch("/:id", authBookingOwner, async (req: Request, res: Response) => {
 //Delete a booking
 router.delete("/:id", authBookingOwner, async (req: Request, res: Response) => {
     const id = Number(req.params.id);
+    const payload = await userFromToken(req);
 
     try {
         const deleteBooking = await prisma.booking.delete({
@@ -129,13 +137,15 @@ router.delete("/:id", authBookingOwner, async (req: Request, res: Response) => {
             }
         });
 
-        const socketId = userSocketMap[res.locals.id];
-        if (socketId) {
-            req.app.get('io').to(socketId).emit('booking-deleted', { 
-                message: `Successfully deleted booking with id ${id}.` 
-            });
+        if (payload) {
+            const socketId = userSocketMap[payload.id];
+            if (socketId) {
+                req.app.get('io').to(socketId).emit('booking-deleted', { 
+                    message: `Successfully deleted booking with id ${id}.` 
+                });
+            }
         }
-
+        
         res.status(HttpStatus.OK).json({ message: 'Successfully deleted booking.' });
     } catch (err) {
         console.log(err);

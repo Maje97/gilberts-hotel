@@ -35,9 +35,7 @@ export function auth(requiredPermissions: Permission[]) {
             [Role.USER]: ['read'],
         };
 
-        const { role, id } = payload;
-        res.locals.role = role;
-        res.locals.id = id;
+        const { role } = payload;
         
         const userPermissions = RolePermissions[role];
 

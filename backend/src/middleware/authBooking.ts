@@ -35,9 +35,7 @@ export function authBooking(requiredPermissions: Permission[]) {
             [Role.USER]: ['create', 'read'],
         };
 
-        const { role, id } = payload;
-        res.locals.role = role;
-        res.locals.id = id;
+        const { role } = payload;
         
         const userPermissions = RolePermissions[role];
 

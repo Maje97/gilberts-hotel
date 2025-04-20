@@ -6,10 +6,10 @@ import { CustomJwtPayload } from "./interfaces";
 dotenv.config();
 const secret = process.env.JWT_SECRET as string
 
-export const userFromToken = async (req: Request): Promise<CustomJwtPayload | null> => {
+export const userFromToken = async (req: Request): Promise<CustomJwtPayload | undefined> => {
     const token = req.headers['authorization'];
     if (!token) { 
-        return null;
+        return undefined;
     }
             
     let payload: CustomJwtPayload;
@@ -17,6 +17,6 @@ export const userFromToken = async (req: Request): Promise<CustomJwtPayload | nu
         payload = jwt.verify(token, secret) as CustomJwtPayload;
         return payload;
     } catch (err) {
-        return null;
+        return undefined;
     }
 }

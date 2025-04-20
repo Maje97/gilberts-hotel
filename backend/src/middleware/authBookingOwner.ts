@@ -26,7 +26,6 @@ export async function authBookingOwner(req: Request, res: Response, next: NextFu
         return; 
     }
     const { id } = payload;
-    res.locals.id = id;
 
     let booking: Booking
     try {
