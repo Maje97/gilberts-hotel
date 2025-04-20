@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from "express";
-import {Role} from "@prisma/client";
+import { Role } from "@prisma/client";
 import { CustomJwtPayload } from "../utils/interfaces";
 import { HttpStatus } from "../utils/httpStatus";
 import jwt from "jsonwebtoken";
