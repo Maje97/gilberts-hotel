@@ -33,8 +33,8 @@ const ProtectedRoute = ({ children }: { children: ReactNode }) => {
 function App() {
   return (
     <Routes>
+      <Route path="/" element={<RedirectRoute><Login /></RedirectRoute>} />
       <Route element={<Layout />}>
-        <Route path="/" element={<RedirectRoute><Login /></RedirectRoute>} />
         <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/about" element={<ProtectedRoute><About /></ProtectedRoute>} />
         <Route path="/rooms" element={<ProtectedRoute><RoomList /></ProtectedRoute>} />

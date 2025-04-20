@@ -9,3 +9,15 @@ export interface IRoom {
 export interface IRoomList {
     rooms: IRoom[];
 }
+
+export interface IBooking {
+    id: number | string;
+    roomId: number | string;
+    userId: number | string;
+    startTime: Date;
+    endTime: Date;
+}
+
+export interface IBookingList {
+    bookings: IBooking[];
+}

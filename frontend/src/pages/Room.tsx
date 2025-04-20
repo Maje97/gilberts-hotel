@@ -1,5 +1,5 @@
 import { useParams } from "react-router";
-import { IRoom } from "../interfaces";
+import { IBooking, IRoom } from "../interfaces";
 import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import CircularProgress from '@mui/material/CircularProgress';
@@ -16,13 +16,16 @@ export default function Room() {
     const now = dayjs();
     const [start, setStart] = useState<Dayjs | null>(now);
     const [end, setEnd] = useState<Dayjs | null>(now.add(1, 'day'));
+    const [bookedRanges, setBookedRanges] = useState<
+        { start: dayjs.Dayjs; end: dayjs.Dayjs }[]
+    >([]);
 
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
             if (user?.token) {
                 try {
-                    const response = await fetch(`https://gilberts-hotel-673663b70f08.herokuapp.com/room/${id}`, {
+                    const response = await fetch(`https://gilberts-hotel-167477665950.europe-north2.run.app/room/${id}`, {
                         method: 'GET',
                         headers: { 
                             'Authorization': user.token,  
@@ -45,14 +48,25 @@ export default function Room() {
                 return ("Error");
             }
         }
+
+        const fetchAvailability = async (roomId: number) => {
+            const res = await fetch(`https://gilberts-hotel-167477665950.europe-north2.run.app/room/availability/${roomId}`);
+            const data = await res.json();
+            setBookedRanges(data.bookings.map((b: IBooking) => ({
+              start: new Date(b.startTime),
+              end: new Date(b.endTime)
+            })));
+        };
+
         console.log("useEffect ran.");
         fetchData();
+        fetchAvailability(Number(id));
     }, [user, id]);
 
     const handleBooking = async () => {
         if (user?.token) {
             try {
-                const response = await fetch(`https://gilberts-hotel-673663b70f08.herokuapp.com/booking`, {
+                const response = await fetch(`https://gilberts-hotel-167477665950.europe-north2.run.app/booking`, {
                     method: 'POST',
                     headers: { 
                         'Authorization': user.token,  
@@ -77,6 +91,16 @@ export default function Room() {
         }
     }
 
+    const isDateInRange = (date: Dayjs, start: Dayjs, end: Dayjs) => {
+        return date.isSame(start, 'day') || date.isSame(end, 'day') || (date.isAfter(start, 'day') && date.isBefore(end, 'day'));
+    };
+
+    const shouldDisableDate = (date: Dayjs) => {
+        return bookedRanges.some(range =>
+          isDateInRange(date, range.start, range.end)
+        );
+    };
+
     return (
         <main className={`flex flex-col items-center space-y-4 ${isLoading && "cursor-progress"}`}>
             {isLoading ? (
@@ -94,11 +118,15 @@ export default function Room() {
                             <div>
                                 <DatePicker 
                                     label="Start date"
+                                    disablePast
+                                    shouldDisableDate={shouldDisableDate}
                                     value={start}
                                     onChange={(newStart) => setStart(newStart)}
                                 />
                                 <DatePicker 
                                     label="End date"
+                                    disablePast
+                                    shouldDisableDate={shouldDisableDate}
                                     value={end}
                                     onChange={(newEnd) => setEnd(newEnd)}
                                 />

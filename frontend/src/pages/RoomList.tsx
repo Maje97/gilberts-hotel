@@ -15,7 +15,7 @@ export default function RoomList() {
             setIsLoading(true);
             if (user?.token) {
                 try {
-                    const response = await fetch('https://gilberts-hotel-673663b70f08.herokuapp.com/room/', {
+                    const response = await fetch('https://gilberts-hotel-167477665950.europe-north2.run.app/room/', {
                         method: 'GET',
                         headers: { 
                             'Authorization': user.token,  
@@ -35,7 +35,7 @@ export default function RoomList() {
                     setIsLoading(false)
                 }
             } else {
-                return ("Error");
+                return console.log("Error");
             }
         }
         console.log("useEffect ran.");
