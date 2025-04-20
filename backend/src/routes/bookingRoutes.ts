@@ -36,9 +36,7 @@ router.post("/", authBooking(['create']), async (req: Request, res: Response) =>
         const socketId = userSocketMap[user];
 
         if(socketId) {
-            req.app.get('io').to(socketId).emit('booking-created', { 
-                message: `Your booking with id ${booking.id} has been created.` 
-            });
+            req.app.get('io').to(socketId).emit('booking-created', `Your booking with id ${booking.id} has been created.`);
         }
         res.status(HttpStatus.CREATED).json({ booking });
     } catch (err) {
@@ -129,9 +127,7 @@ router.patch("/:id", authBookingOwner, async (req: Request, res: Response) => {
         });
         const socketId = userSocketMap[user];
         if (socketId) {
-            req.app.get('io').to(socketId).emit('booking-updated', { 
-                message: `Successfully updated booking with id ${id}.` 
-            });
+            req.app.get('io').to(socketId).emit('booking-updated', `Successfully updated booking with id ${id}.`);
         }
         res.status(HttpStatus.OK).json({ message: 'Successfully updated booking.' });
     } catch (err) {
@@ -158,9 +154,7 @@ router.delete("/:id", authBookingOwner, async (req: Request, res: Response) => {
         if (payload) {
             const socketId = userSocketMap[payload.id];
             if (socketId) {
-                req.app.get('io').to(socketId).emit('booking-deleted', { 
-                    message: `Successfully deleted booking with id ${id}.` 
-                });
+                req.app.get('io').to(socketId).emit('booking-deleted', `Successfully deleted booking with id ${id}.`);
             }
         }
         
