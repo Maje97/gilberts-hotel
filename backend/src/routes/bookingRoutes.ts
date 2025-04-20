@@ -7,6 +7,7 @@ import { authBooking } from '../middleware/authBooking';
 import { Role } from '@prisma/client';
 import { authBookingOwner } from '../middleware/authBookingOwner';
 import { userFromToken } from '../utils/userFromToken';
+import { isRoomAvailable } from '../utils/bookingUtils';
 
 const router = express.Router();
 
@@ -15,12 +16,21 @@ router.post("/", authBooking(['create']), async (req: Request, res: Response) =>
     const {room, user, startTime, endTime} = req.body as BookingData;
 
     try {
+        const available = await isRoomAvailable(room, new Date(startTime), new Date(endTime));
+
+        if (!available) {
+            return res.status(HttpStatus.CONFLICT).json({
+                error: 'Room not available',
+                message: 'The room is already booked for the selected time range.'
+            });
+        }
+
         const booking = await prisma.booking.create({
             data: {
                 roomId: room,
                 userId: user,
-                startTime,
-                endTime
+                startTime: new Date(startTime),
+                endTime: new Date(endTime)
             }
         })
         const socketId = userSocketMap[user];
@@ -90,12 +100,22 @@ router.get("/:id", authBookingOwner, async (req: Request, res: Response) => {
     }
 });
 
+
 //Edit a booking
 router.patch("/:id", authBookingOwner, async (req: Request, res: Response) => {
     const id = Number(req.params.id);
     const {room, user, startTime, endTime} = req.body as BookingData;
 
     try {
+        const available = await isRoomAvailable(room, new Date(startTime), new Date(endTime), id);
+
+        if (!available) {
+            return res.status(HttpStatus.CONFLICT).json({
+                error: 'Room not available',
+                message: 'The room is already booked for the selected time range.'
+            });
+        }
+
         const updateBooking = await prisma.booking.update({
             where: {
                 id

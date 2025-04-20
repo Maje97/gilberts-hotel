@@ -63,6 +63,28 @@ router.get("/:id", auth(['read']), async (req: Request, res: Response) => {
     }
 });
 
+//Get booked dates for specific room
+router.get("/availability/:roomId", async (req: Request, res: Response) => {
+    const roomId = Number(req.params.roomId);
+
+    try {
+        const bookings = await prisma.booking.findMany({
+            where: { roomId },
+            select: {
+                startTime: true,
+                endTime: true
+            }
+        });
+
+        res.status(HttpStatus.OK).json({ bookings });
+    } catch (err) {
+        console.log(err);
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+            error: 'Could not fetch availability'
+        });
+    }
+});
+
 //Update a room
 router.patch("/:id", auth(['update']), async (req: Request, res: Response) => {
     const id = Number(req.params.id);
