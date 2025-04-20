@@ -51,9 +51,7 @@ router.get("/", authBooking(['read']), async (req: Request, res: Response) => {
         } else if (payload) {
             const bookings = await prisma.bookings.findMany({
                 where: {
-                    userId: {
-                        equals: payload.id
-                    } 
+                    userId: payload.id
                 }
             });
             res.status(HttpStatus.OK).json({ bookings });
