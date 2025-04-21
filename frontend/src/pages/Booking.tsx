@@ -87,8 +87,8 @@ export default function Booking() {
   const deleteBooking = async () => {
     if (user?.token) {
       try {
-          const response = await fetch(`https://gilberts-hotel-167477665950.europe-north2.run.app/booking/${Number(id)}`, {
-              method: 'PATCH',
+          const response = await fetch(`https://gilberts-hotel-167477665950.europe-north2.run.app/booking/${id}`, {
+              method: 'DELETE',
               headers: { 
                   'Authorization': user.token,  
                   'Content-Type': 'application/json', 
