@@ -12,7 +12,6 @@ export default function Layout() {
       {user && <NavBar /> || <Hero />}
       <div className="flex flex-col my-4 items-center">
         <Outlet />
-        <p id="socket_event"></p>
       </div>
       <Footer />
     </div>
