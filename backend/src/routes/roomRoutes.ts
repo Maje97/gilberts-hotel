@@ -4,6 +4,7 @@ import { HttpStatus } from "../utils/httpStatus";
 import { auth } from '../middleware/auth'; //Work in progress
 import { RoomData, Room } from '../utils/interfaces';
 import logger from '../utils/logger';
+import redisClient from '../redis';
 
 const router = express.Router();
 
@@ -32,8 +33,17 @@ router.post("/", auth(['create']), async (req: Request, res: Response) => {
 
 //Get all rooms
 router.get("/", auth(['read']), async (req: Request, res: Response) => {
+    const cacheKey = 'rooms:all';
     try {
+        const cached = await redisClient.get(cacheKey);
+
+        if (cached) {
+            const data = JSON.parse(cached);
+            return res.status(HttpStatus.OK).json({ data });
+        }
+
         const rooms = await prisma.room.findMany();
+        await redisClient.setEx(cacheKey, 3600, JSON.stringify(rooms));
         res.status(HttpStatus.OK).json({ rooms });
     } catch (err) {
         logger.error(`Error: ${err}`);

@@ -23,10 +23,12 @@
     "dotenv": "16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
+    "redis": "^4.7.0",
     "socket.io": "^4.8.1",
     "winston": "^3.17.0"
   },
   "devDependencies": {
+    "@types/redis": "^4.0.10",
     "prisma": "^6.5.0",
     "ts-node": "10.9.2",
     "typescript": "5.7.3"
