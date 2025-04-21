@@ -6,15 +6,18 @@ import { useAuth } from "../hooks/useAuth";
 import dayjs, { Dayjs } from "dayjs";
 import { IBooking } from "../interfaces";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useNavigate } from "react-router";
 
 export default function Booking() {
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const { user } = useAuth();
   const [data, setData] = useState<{booking: IBooking}>();
   const now = dayjs();
   const [start, setStart] = useState<Dayjs | null>(now);
   const [end, setEnd] = useState<Dayjs | null>(now.add(1, 'day'));
+  const navigate = useNavigate();
 
   useEffect(() => {
       const fetchData = async () => {
@@ -52,6 +55,7 @@ export default function Booking() {
 
   const updateBooking = async () => {
     if (user?.token) {
+      setIsUpdating(true);
       try {
           const response = await fetch(`https://gilberts-hotel-167477665950.europe-north2.run.app/booking/${Number(id)}`, {
               method: 'PATCH',
@@ -74,6 +78,8 @@ export default function Booking() {
           console.log(newRes);
       } catch (error) {
           console.error('Fetch error:', error);
+      } finally {
+        setIsUpdating(false);
       }
     }
   }
@@ -94,6 +100,7 @@ export default function Booking() {
           }
           const newRes = await response.json();
           console.log(newRes);
+          navigate("/bookings");
       } catch (error) {
           console.error('Fetch error:', error);
       }
@@ -122,8 +129,9 @@ export default function Booking() {
                       onChange={(newEnd) => setEnd(newEnd)}
                   />
                 </div>
-                <Button variant="primary" onClick={() => updateBooking()}>Update</Button>
-                <Button variant="secondary" onClick={() => deleteBooking()}>Delete booking</Button>
+                {isUpdating && <CircularProgress />}
+                <Button disabled={isUpdating} variant="primary" onClick={() => updateBooking()}>Update</Button>
+                <Button disabled={isUpdating} variant="secondary" onClick={() => deleteBooking()}>Delete booking</Button>
               </>
             )
           }
