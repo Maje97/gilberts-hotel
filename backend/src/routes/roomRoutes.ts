@@ -38,8 +38,8 @@ router.get("/", auth(['read']), async (req: Request, res: Response) => {
         const cached = await redisClient.get(cacheKey);
 
         if (cached) {
-            const data = JSON.parse(cached);
-            return res.status(HttpStatus.OK).json({ data });
+            const rooms = JSON.parse(cached);
+            return res.status(HttpStatus.OK).json({ rooms });
         }
 
         const rooms = await prisma.room.findMany();
