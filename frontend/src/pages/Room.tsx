@@ -13,7 +13,6 @@ export default function Room() {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isBooking, setIsBooking] = useState<boolean>(false);
     const { user } = useAuth();
-    console.log(user);
     const [data, setData] = useState<{room: IRoom}>();
     const now = dayjs();
     const [start, setStart] = useState<Dayjs | null>(now);

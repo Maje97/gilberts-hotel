@@ -38,8 +38,8 @@ export default function Booking() {
                   const newData = await response.json();
                   console.log(newData);
                   setData(newData);
-                  setStart(newData.booking.startTime);
-                  setEnd(newData.booking.endTime);
+                  setStart(dayjs(newData.booking.startTime));
+                  setEnd(dayjs(newData.booking.endTime));
               } catch (error) {
                   console.error('Fetch error:', error);
               } finally {
