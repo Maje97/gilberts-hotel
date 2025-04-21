@@ -10,6 +10,7 @@ import dayjs, { Dayjs } from "dayjs";
 
 export default function Room() {
     const { id } = useParams();
+    console.log(id);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isBooking, setIsBooking] = useState<boolean>(false);
     const { user } = useAuth();
@@ -51,7 +52,7 @@ export default function Room() {
                     setData(newData);
                     setNewURL(newData.room.image);
                     setNewName(newData.room.name);
-                    setNewCap(Number(newData.room.capacity));
+                    setNewCap(newData.room.capacity);
                     setNewType(newData.room.type);
                 } catch (error) {
                     console.error('Fetch error:', error);
