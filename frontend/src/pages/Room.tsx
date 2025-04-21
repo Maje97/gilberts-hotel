@@ -88,7 +88,7 @@ export default function Room() {
                         'Content-Type': 'application/json', 
                     },
                     body: JSON.stringify({ 
-                        room: Number(id), 
+                        room: id, 
                         user: user.id, 
                         startTime: start, 
                         endTime: end 
@@ -96,7 +96,7 @@ export default function Room() {
                 })
 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response}`);
+                    throw new Error(`HTTP error! status: ${response.toString()}`);
                 }
                 const newRes = await response.json();
                 console.log(newRes);
@@ -137,7 +137,7 @@ export default function Room() {
                 })
       
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response}`);
+                    throw new Error(`HTTP error! status: ${response.toString()}`);
                 }
                 const newRes = await response.json();
                 console.log(newRes);

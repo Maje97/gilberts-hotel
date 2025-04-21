@@ -33,7 +33,7 @@ export default function Booking() {
                   })
   
                   if (!response.ok) {
-                      throw new Error(`HTTP error! status: ${response}`);
+                      throw new Error(`HTTP error! status: ${response.toString}`);
                   }
                   const newData = await response.json();
                   console.log(newData);
@@ -46,7 +46,7 @@ export default function Booking() {
                   setIsLoading(false)
               }
           } else {
-              return ("Error");
+              return (console.log("Error"));
           }
       }
       console.log("useEffect ran.");
