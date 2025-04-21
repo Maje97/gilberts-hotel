@@ -28,7 +28,11 @@ export async function authBookingOwner(req: Request, res: Response, next: NextFu
         void res.status(HttpStatus.NOT_AUTHENTICATED).send('Token is not valid');
         return; 
     }
-    const { id } = payload;
+    const { id, role } = payload;
+
+    if (role === Role.ADMIN) {
+        return next();
+    }
 
     let booking: Booking
     try {
