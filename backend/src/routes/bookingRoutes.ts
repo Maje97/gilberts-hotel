@@ -15,18 +15,12 @@ const router = express.Router();
 //Create a booking
 router.post("/", authBooking(['create']), async (req: Request, res: Response) => {
     const {room, user, startTime, endTime} = req.body as BookingData;
-    const socketId = userSocketMap[user];
-
+    
     try {
         const available = await isRoomAvailable(room, new Date(startTime), new Date(endTime));
 
         if (!available) {
             logger.warn(`An attempt to double book a room was made: Room#${room}, start: ${startTime}, end: ${endTime}`);
-            if(socketId) {
-                req.app.get('io').to(socketId).emit('booking-created', `Your booking was not created because the room is already booked during ${startTime}, ${endTime}.`);
-            } else {
-                logger.warn(`Failed to emit socket message when creating booking. Potentially missing socket id: ${socketId}`);
-            }
             return res.status(HttpStatus.CONFLICT).json({
                 error: 'Room not available',
                 message: 'The room is already booked for the selected time range.'
@@ -42,6 +36,7 @@ router.post("/", authBooking(['create']), async (req: Request, res: Response) =>
             }
         })
 
+        const socketId = userSocketMap[user];
         if(socketId) {
             req.app.get('io').to(socketId).emit('booking-created', `Your booking with id ${booking.id} has been created.`);
         } else {
@@ -51,11 +46,6 @@ router.post("/", authBooking(['create']), async (req: Request, res: Response) =>
         logger.info(`Booking created: ${booking}`);
         res.status(HttpStatus.CREATED).json({ booking });
     } catch (err) {
-        if(socketId) {
-            req.app.get('io').to(socketId).emit('booking-created', `Your booking failed to be created.`);
-        } else {
-            logger.warn(`Failed to emit socket message when creating booking. Potentially missing socket id: ${socketId}`);
-        }
         logger.error(`Error: ${err}`);
         res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
             error: 'Service unavailable', 
@@ -120,17 +110,12 @@ router.get("/:id", authBookingOwner, async (req: Request, res: Response) => {
 router.patch("/:id", authBookingOwner, async (req: Request, res: Response) => {
     const id = Number(req.params.id);
     const {room, user, startTime, endTime} = req.body as BookingData;
-    const socketId = userSocketMap[user];
+    
 
     try {
         const available = await isRoomAvailable(room, new Date(startTime), new Date(endTime), id);
 
         if (!available) {
-            if (socketId) {
-                req.app.get('io').to(socketId).emit('booking-updated', `Your booking was not created because the room is already booked during ${startTime}, ${endTime}.`);
-            } else {
-                logger.warn(`Failed to emit socket message when updating booking. Potentially missing socket id: ${socketId}`);
-            }
             logger.warn(`An attempt to double book a room was made: Room#${room}, start: ${startTime}, end: ${endTime}`);
             return res.status(HttpStatus.CONFLICT).json({
                 error: 'Room not available',
@@ -149,7 +134,7 @@ router.patch("/:id", authBookingOwner, async (req: Request, res: Response) => {
                 endTime
             }
         });
-        
+        const socketId = userSocketMap[user];
         if (socketId) {
             req.app.get('io').to(socketId).emit('booking-updated', `Successfully updated booking with id ${id}.`);
         } else {
