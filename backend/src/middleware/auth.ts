@@ -4,6 +4,7 @@ import { CustomJwtPayload } from "../utils/interfaces";
 import { HttpStatus } from "../utils/httpStatus";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import logger from "../utils/logger";
 
 dotenv.config();
 const secret = process.env.JWT_SECRET as string
@@ -18,6 +19,7 @@ export function auth(requiredPermissions: Permission[]) {
     return (req: Request, res: Response, next: NextFunction): void => {
         const token = req.headers['authorization'];
         if (!token) { 
+            logger.error(`Error, missing token. Req: ${req}`);
             void res.status(HttpStatus.NOT_AUTHENTICATED).send('No token was recieved.');
             return;
         }
@@ -26,6 +28,7 @@ export function auth(requiredPermissions: Permission[]) {
         try {
             payload = jwt.verify(token, secret) as CustomJwtPayload;
         } catch (err) {
+            logger.error(`Error in middleware: ${err}`);
             void res.status(HttpStatus.NOT_AUTHENTICATED).send('Token is not valid');
             return; 
         }
@@ -46,6 +49,7 @@ export function auth(requiredPermissions: Permission[]) {
 
         //If user permissions are missing
         if (!userPermissions) {
+            logger.warn(`User access is declined due to missing user permissions. Payload: ${payload}, user permissions: ${userPermissions}`)
             void res.status(HttpStatus.NOT_AUTHORIZED).send('User is not authorized.')
             return
         }
@@ -57,6 +61,7 @@ export function auth(requiredPermissions: Permission[]) {
 
         //Decline user if not authorized, otherwise continue to next.
         if (!hasRequiredPermissions) {
+            logger.info(`User access is declined due to not having required permission. Role: ${role}, required permissions: ${requiredPermissions}`);
             void res.status(HttpStatus.NOT_AUTHORIZED).send('User is not authorized, access declined.');
             return
         }

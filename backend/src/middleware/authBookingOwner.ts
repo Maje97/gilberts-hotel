@@ -5,6 +5,7 @@ import { HttpStatus } from "../utils/httpStatus";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import prisma from "../utils/prismaClient";
+import logger from "../utils/logger";
 
 dotenv.config();
 const secret = process.env.JWT_SECRET as string
@@ -14,6 +15,7 @@ export async function authBookingOwner(req: Request, res: Response, next: NextFu
     const token = req.headers['authorization'];
 
     if (!token) { 
+        logger.error(`Error, missing token. Req: ${req}`);
         void res.status(HttpStatus.NOT_AUTHENTICATED).send('No token was recieved.');
         return;
     }
@@ -22,6 +24,7 @@ export async function authBookingOwner(req: Request, res: Response, next: NextFu
     try {
         payload = jwt.verify(token, secret) as CustomJwtPayload;
     } catch (err) {
+        logger.error(`Error in middleware: ${err}`);
         void res.status(HttpStatus.NOT_AUTHENTICATED).send('Token is not valid');
         return; 
     }
@@ -35,6 +38,7 @@ export async function authBookingOwner(req: Request, res: Response, next: NextFu
             }
         })
     } catch (err) {
+        logger.error(`Error in middleware: ${err}`);
         void res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
             error: 'Service unavailable', 
             message: 'An error has occured. Try again later.' 
@@ -44,5 +48,6 @@ export async function authBookingOwner(req: Request, res: Response, next: NextFu
 
     if (id === booking.userId) next();
 
+    logger.info(`User is denied due to not being authorized. Req: ${req}`);
     res.status(HttpStatus.NOT_AUTHORIZED).send('User is not authorized.');
 }

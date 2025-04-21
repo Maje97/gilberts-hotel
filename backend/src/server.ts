@@ -8,6 +8,7 @@ import bookingRoutes from './routes/bookingRoutes';
 import { setupSocket } from './utils/socket';
 import cors from 'cors';
 import { HttpStatus } from './utils/httpStatus';
+import logger from './utils/logger';
 
 dotenv.config();
 
@@ -39,6 +40,7 @@ app.use('/booking', bookingRoutes);
 
 // 404 Handler
 app.use((req: Request, res: Response) => {
+    logger.info(`Failed request: ${req}`);
     res.status(HttpStatus.NOT_FOUND).json({ 
         error: 'Not Found', 
         message: `Route ${req.originalUrl} does not exist.` 
@@ -47,7 +49,7 @@ app.use((req: Request, res: Response) => {
 
 // Error Handler
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    console.error(err.stack);
+    logger.error(`Error: ${err}`);
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ 
         error: 'Internal Server Error', 
         message: err.message 

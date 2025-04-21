@@ -8,6 +8,7 @@ import { Role } from '@prisma/client';
 import { authBookingOwner } from '../middleware/authBookingOwner';
 import { userFromToken } from '../utils/userFromToken';
 import { isRoomAvailable } from '../utils/bookingUtils';
+import logger from '../utils/logger';
 
 const router = express.Router();
 
@@ -19,6 +20,7 @@ router.post("/", authBooking(['create']), async (req: Request, res: Response) =>
         const available = await isRoomAvailable(room, new Date(startTime), new Date(endTime));
 
         if (!available) {
+            logger.warn(`An attempt to double book a room was made: Room#${room}, start: ${startTime}, end: ${endTime}`);
             return res.status(HttpStatus.CONFLICT).json({
                 error: 'Room not available',
                 message: 'The room is already booked for the selected time range.'
@@ -33,14 +35,19 @@ router.post("/", authBooking(['create']), async (req: Request, res: Response) =>
                 endTime: new Date(endTime)
             }
         })
+        
         const socketId = userSocketMap[user];
 
         if(socketId) {
             req.app.get('io').to(socketId).emit('booking-created', `Your booking with id ${booking.id} has been created.`);
+        } else {
+            logger.warn(`Failed to emit socket message when creating booking. Potentially missing socket id: ${socketId.toString()}`);
         }
+
+        logger.info(`Booking created: ${booking}`);
         res.status(HttpStatus.CREATED).json({ booking });
     } catch (err) {
-        console.log(err);
+        logger.error(`Error: ${err}`);
         res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
             error: 'Service unavailable', 
             message: 'An error has occured. Try again later.' 
@@ -64,13 +71,14 @@ router.get("/", authBooking(['read']), async (req: Request, res: Response) => {
             });
             res.status(HttpStatus.OK).json({ bookings });
         } else {
+            logger.error(`Failed to get bookings. Payload: ${payload}`);
             res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
                 error: 'Service unavailable', 
                 message: 'An error has occured. Try again later.' 
             });
         }
     } catch (err) {
-        console.log(err);
+        logger.error(`Error: ${err}`);
         res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
             error: 'Service unavailable', 
             message: 'An error has occured. Try again later.' 
@@ -90,7 +98,7 @@ router.get("/:id", authBookingOwner, async (req: Request, res: Response) => {
         });
         res.status(HttpStatus.OK).json({ booking });
     } catch (err) {
-        console.log(err);
+        logger.error(`Error: ${err}`);
         res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
             error: 'Service unavailable', 
             message: 'An error has occured. Try again later.' 
@@ -108,6 +116,7 @@ router.patch("/:id", authBookingOwner, async (req: Request, res: Response) => {
         const available = await isRoomAvailable(room, new Date(startTime), new Date(endTime), id);
 
         if (!available) {
+            logger.warn(`An attempt to double book a room was made: Room#${room}, start: ${startTime}, end: ${endTime}`);
             return res.status(HttpStatus.CONFLICT).json({
                 error: 'Room not available',
                 message: 'The room is already booked for the selected time range.'
@@ -128,10 +137,12 @@ router.patch("/:id", authBookingOwner, async (req: Request, res: Response) => {
         const socketId = userSocketMap[user];
         if (socketId) {
             req.app.get('io').to(socketId).emit('booking-updated', `Successfully updated booking with id ${id}.`);
+        } else {
+            logger.warn(`Failed to emit socket message when updating booking. Potentially missing socket id: ${socketId.toString()}`);
         }
         res.status(HttpStatus.OK).json({ message: 'Successfully updated booking.' });
     } catch (err) {
-        console.log(err);
+        logger.error(`Error: ${err}`);
         res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
             error: 'Service unavailable', 
             message: 'An error has occured. Try again later.' 
@@ -155,12 +166,16 @@ router.delete("/:id", authBookingOwner, async (req: Request, res: Response) => {
             const socketId = userSocketMap[payload.id];
             if (socketId) {
                 req.app.get('io').to(socketId).emit('booking-deleted', `Successfully deleted booking with id ${id}.`);
+            } else {
+                logger.warn(`Failed to emit socket message when deleting booking. Potentially missing socket id: ${socketId.toString()}`);
             }
+        } else {
+            logger.warn(`Failed to emit socket message when updating booking due to missing payload.`);
         }
         
         res.status(HttpStatus.OK).json({ message: 'Successfully deleted booking.' });
     } catch (err) {
-        console.log(err);
+        logger.error(`Error: ${err}`);
         res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
             error: 'Service unavailable', 
             message: 'An error has occured. Try again later.' 

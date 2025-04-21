@@ -3,6 +3,7 @@ import prisma from '../utils/prismaClient';
 import { HttpStatus } from "../utils/httpStatus";
 import { auth } from '../middleware/auth'; //Work in progress
 import { RoomData, Room } from '../utils/interfaces';
+import logger from '../utils/logger';
 
 const router = express.Router();
 
@@ -21,7 +22,7 @@ router.post("/", auth(['create']), async (req: Request, res: Response) => {
         })
         res.status(HttpStatus.CREATED).json({ id: room.id, type: room.type });
     } catch (err) {
-        console.log(err);
+        logger.error(`Error: ${err}`);
         res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
             error: 'Service unavailable',
             message: 'An error has occured. Try again later.'  
@@ -35,7 +36,7 @@ router.get("/", auth(['read']), async (req: Request, res: Response) => {
         const rooms = await prisma.room.findMany();
         res.status(HttpStatus.OK).json({ rooms });
     } catch (err) {
-        console.log(err);
+        logger.error(`Error: ${err}`);
         res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
             error: 'Service unavailable', 
             message: 'An error has occured. Try again later.' 
@@ -55,7 +56,7 @@ router.get("/:id", auth(['read']), async (req: Request, res: Response) => {
         });
         res.status(HttpStatus.OK).json({ room });
     } catch (err) {
-        console.log(err);
+        logger.error(`Error: ${err}`);
         res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
             error: 'Service unavailable', 
             message: 'An error has occured. Try again later.' 
@@ -78,7 +79,7 @@ router.get("/availability/:roomId", async (req: Request, res: Response) => {
 
         res.status(HttpStatus.OK).json({ bookings });
     } catch (err) {
-        console.log(err);
+        logger.error(`Error: ${err}`);
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
             error: 'Could not fetch availability'
         });
@@ -104,7 +105,7 @@ router.patch("/:id", auth(['update']), async (req: Request, res: Response) => {
         });
         res.status(HttpStatus.OK).send({ message: 'Successfully updated room.' });
     } catch (err) {
-        console.log(err);
+        logger.error(`Error: ${err}`);
         res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
             error: 'Service unavailable', 
             message: 'An error has occured. Try again later.' 
@@ -124,7 +125,7 @@ router.delete("/:id", auth(['delete']), async (req: Request, res: Response) => {
         });
         res.status(HttpStatus.OK).send({ message: 'Successfully deleted room.' });
     } catch (err) {
-        console.log(err);
+        logger.error(`Error: ${err}`);
         res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
             error: 'Service unavailable', 
             message: 'An error has occured. Try again later.' 

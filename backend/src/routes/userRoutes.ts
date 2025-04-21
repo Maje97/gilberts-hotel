@@ -5,6 +5,7 @@ import prisma from "../utils/prismaClient";
 import dotenv from "dotenv";
 import { User, UserCredentials, CustomJwtPayload } from "../utils/interfaces";
 import { HttpStatus } from "../utils/httpStatus";
+import logger from "../utils/logger";
 
 dotenv.config();
 const router = express.Router();
@@ -48,7 +49,7 @@ router.post("/", async (req: Request, res: Response) => {
     });
 
   } catch (err) {
-    console.log(err);
+    logger.error(`Error: ${err}`);
     res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
       error: 'Service unavailable', 
       message: 'An error has occured. Try again later.' 
@@ -103,7 +104,7 @@ router.post("/login", async (req: Request, res: Response) => {
     });
 
   } catch (err) {
-    console.log(err);
+    logger.error(`Error: ${err}`);
     res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
       error: 'Service unavailable',
       message: "Service seems to be currently unavailable. Please try later." 
