@@ -128,8 +128,8 @@ router.patch("/:id", authBookingOwner, async (req: Request, res: Response) => {
                 id
             },
             data: {
-                room,
-                user,
+                roomId: room,
+                userId: user,
                 startTime,
                 endTime
             }
