@@ -9,7 +9,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import socket from "./socket";
 
 socket.on("login", (data) => {
-  alert("Login:" + data.toString());
+  console.log("Login:" + data.toString());
 });
 
 socket.on("booking-created", (data: string) => {
