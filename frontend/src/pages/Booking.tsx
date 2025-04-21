@@ -64,7 +64,7 @@ export default function Booking() {
                   'Content-Type': 'application/json', 
               },
               body: JSON.stringify({ 
-                  room: Number(id), 
+                  room: data?.booking.roomId,
                   user: user.id, 
                   startTime: start, 
                   endTime: end 
