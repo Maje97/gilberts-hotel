@@ -4,7 +4,7 @@ export async function isRoomAvailable(roomId: number, startTime: Date, endTime: 
     const overlappingBookings = await prisma.booking.findMany({
         where: {
             roomId,
-            id: excludeBookingId ? { not: excludeBookingId } : undefined,
+            ...(excludeBookingId && { id: { not: excludeBookingId } }),
             NOT: [
                 {
                     endTime: {

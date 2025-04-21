@@ -10,10 +10,10 @@ import dayjs, { Dayjs } from "dayjs";
 
 export default function Room() {
     const { id } = useParams();
-    console.log(id);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isBooking, setIsBooking] = useState<boolean>(false);
     const { user } = useAuth();
+    console.log(user);
     const [data, setData] = useState<{room: IRoom}>();
     const now = dayjs();
     const [start, setStart] = useState<Dayjs | null>(now);
@@ -89,7 +89,7 @@ export default function Room() {
                         'Content-Type': 'application/json', 
                     },
                     body: JSON.stringify({ 
-                        room: id, 
+                        room: Number(id), 
                         user: user.id, 
                         startTime: start, 
                         endTime: end 
