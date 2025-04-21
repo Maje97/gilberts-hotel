@@ -50,7 +50,7 @@ export async function authBookingOwner(req: Request, res: Response, next: NextFu
         return;
     }
 
-    if (id === booking.userId) next();
+    if (id === booking.userId) return next();
 
     logger.info(`User is denied due to not being authorized. Req: ${req}`);
     res.status(HttpStatus.NOT_AUTHORIZED).send('User is not authorized.');
