@@ -1,5 +1,5 @@
 # Gilbert´s Hotel  
-### This is a project made for the course "Backend-utveckling NodeJs" at Företagsuniversitetet.
+## This is a project made for the course "Backend-utveckling NodeJs" at Företagsuniversitetet.
 
 Frontend link: https://gilberts-hotel.vercel.app  
 Backend API link: https://gilberts-hotel-673663b70f08.herokuapp.com/  
@@ -15,6 +15,23 @@ Type git clone https://github.com/Maje97/gilberts-hotel.git in your command prom
 You can either make accounts on prisma and redis or make docker containers as databases. If you want to use the frontend you need to change the URL´s for fetch requests.  
 
 ### Backend API
-User routes  
-Room routes  
-Booking routes  
+#### User routes  
+Register new user:  
+POST /user  
+{
+  "username": string,
+  "password": string
+}
+
+Login user:  
+POST /user/login  
+{
+  "username": string,
+  "password": string
+}
+
+Delete user:  
+DELETE /user/{id}
+
+#### Room routes  
+#### Booking routes  
