@@ -18,20 +18,63 @@ You can either make accounts on prisma and redis or make docker containers as da
 #### User routes  
 Register new user:  
 POST /user  
-{
-  "username": string,
-  "password": string
-}
+req.body: { "username": string, "password": string }  
 
 Login user:  
 POST /user/login  
-{
-  "username": string,
-  "password": string
-}
+req.body: { "username": string, "password": string }  
 
-Delete user:  
-DELETE /user/{id}
+Delete user:   
+DELETE /user/{id}  
+req.headers: { "Authorization": JWT token }   
 
 #### Room routes  
+Create a room:  
+POST /room  
+req.headers: { "Authorization": JWT token }  
+req.body: { "image": string, "name": string, "capacity": number, "type": "SINGLE" || "DOUBLE" || "FAMILY" }  
+
+Get all rooms:  
+GET /room  
+req.headers: { "Authorization": JWT token }  
+
+Get a specific room:  
+GET /room/{id}  
+req.headers: { "Authorization": JWT token }  
+
+Get booked dates for a specific room:  
+GET /room/availability/{id}  
+req.headers: { "Authorization": JWT token }  
+
+Update a room:  
+PATCH /room/{id}  
+req.headers: { "Authorization": JWT token }  
+req.body: { "image": string, "name": string, "capacity": number, "type": "SINGLE" || "DOUBLE" || "FAMILY" }  
+
+Delete a room:  
+DELETE /room/{id}  
+req.headers: { "Authorization": JWT token }  
+
 #### Booking routes  
+Create a booking:  
+POST /booking  
+req.headers: { "Authorization": JWT token }  
+req.body: { "room": number, "user": number, "startTime": Date, "endTime": Date }  
+
+Get all bookings (admin get all, users get all their bookings):  
+GET /booking  
+req.headers: { "Authorization": JWT token }  
+
+Get a specific booking:  
+GET /booking/{id}  
+req.headers: { "Authorization": JWT token }  
+
+Edit a booking:  
+PATCH /booking/{id}  
+req.headers: { "Authorization": JWT token }  
+req.body: { "room": number, "user": number, "startTime": Date, "endTime": Date }  
+
+Delete a booking:  
+DELETE /booking/{id}  
+req.headers: { "Authorization": JWT token }  
+
