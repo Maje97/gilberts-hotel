@@ -78,7 +78,7 @@ router.get("/:id", auth(['read']), async (req: Request, res: Response) => {
 });
 
 //Get booked dates for specific room
-router.get("/availability/:roomId", async (req: Request, res: Response) => {
+router.get("/availability/:roomId", auth(['read']), async (req: Request, res: Response) => {
     const roomId = Number(req.params.roomId);
 
     try {
