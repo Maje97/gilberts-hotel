@@ -26,8 +26,8 @@ model Room {
 
 model Booking {
   id          Int     @id @default(autoincrement())
-  room        Room?   @relation(fields: [roomId], references: [id])
-  user        User?   @relation(fields: [userId], references: [id])
+  room        Room?   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user        User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   roomId      Int?
   userId      Int?
   startTime   DateTime

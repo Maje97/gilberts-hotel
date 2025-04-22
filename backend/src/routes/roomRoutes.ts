@@ -21,6 +21,9 @@ router.post("/", auth(['create']), async (req: Request, res: Response) => {
                 type
             }
         })
+        const cacheKey = 'rooms:all';
+        const rooms = await prisma.room.findMany();
+        await redisClient.setEx(cacheKey, 3600, JSON.stringify(rooms));
         res.status(HttpStatus.CREATED).json({ id: room.id, type: room.type });
     } catch (err) {
         logger.error(`Error: ${err}`);
@@ -113,6 +116,9 @@ router.patch("/:id", auth(['update']), async (req: Request, res: Response) => {
                 type
             }
         });
+        const cacheKey = 'rooms:all';
+        const rooms = await prisma.room.findMany();
+        await redisClient.setEx(cacheKey, 3600, JSON.stringify(rooms));
         res.status(HttpStatus.OK).send({ message: 'Successfully updated room.' });
     } catch (err) {
         logger.error(`Error: ${err}`);
@@ -133,6 +139,9 @@ router.delete("/:id", auth(['delete']), async (req: Request, res: Response) => {
                 id
             }
         });
+        const cacheKey = 'rooms:all';
+        const rooms = await prisma.room.findMany();
+        await redisClient.setEx(cacheKey, 3600, JSON.stringify(rooms));
         res.status(HttpStatus.OK).send({ message: 'Successfully deleted room.' });
     } catch (err) {
         logger.error(`Error: ${err}`);

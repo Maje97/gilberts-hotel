@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import { User, UserCredentials, CustomJwtPayload } from "../utils/interfaces";
 import { HttpStatus } from "../utils/httpStatus";
 import logger from "../utils/logger";
+import { auth } from "../middleware/auth";
 
 dotenv.config();
 const router = express.Router();
@@ -111,5 +112,25 @@ router.post("/login", async (req: Request, res: Response) => {
     });
   }
 });
+
+//Delete user
+router.delete("/:id", auth(['delete']), async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+
+  try {
+      const deleteUser = await prisma.user.delete({
+          where: {
+              id
+          }
+      });
+      res.status(HttpStatus.OK).send({ message: 'Successfully deleted user.' });
+  } catch (err) {
+      logger.error(`Error: ${err}`);
+      res.status(HttpStatus.SERVICE_UNAVAILABLE).json({ 
+          error: 'Service unavailable', 
+          message: 'An error has occured. Try again later.' 
+      });
+  }
+})
 
 export default router;
