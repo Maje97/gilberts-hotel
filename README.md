@@ -2,7 +2,7 @@
 ## This is a project made for the course "Backend-utveckling NodeJs" at Företagsuniversitetet.
 
 Frontend link: https://gilberts-hotel.vercel.app  
-Backend API link: https://gilberts-hotel-673663b70f08.herokuapp.com/  
+Backend API link: https://gilberts-hotel-167477665950.europe-north2.run.app/
 
 This project is made for the course "Backend-utveckling NodeJs" part of the Fullstack program at Företagsuniversitetet. The frontend is built with Vite + React + Typescript and is deployed on Vercel. The backend is made with Node.JS, Express.JS, Prisma Postgres and Redis. Socket.io is used for real time notifications and Winston is used for logging.
 
