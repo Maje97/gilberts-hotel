@@ -29,6 +29,7 @@ export default function About() {
                         <br/>from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=6878004">Pixabay</a>
                     </p> 
                 </div>
+                <p>Favicon by <a href="https://www.svgrepo.com" target="_blank">SVG Repo</a></p>
             </div>
         </main>
     );
