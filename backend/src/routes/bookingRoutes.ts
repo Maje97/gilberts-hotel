@@ -15,10 +15,10 @@ const router = express.Router();
 //Create a booking
 router.post("/", authBooking(['create']), async (req: Request, res: Response) => {
     const {room, user, startTime, endTime} = req.body as BookingData;
-    const socketId = userSocketMap[user];
-
+    
     try {
         const available = await isRoomAvailable(room, new Date(startTime), new Date(endTime));
+        const socketId = userSocketMap[user];
 
         if (!available) {
             if(socketId) {
@@ -115,10 +115,10 @@ router.get("/:id", authBookingOwner, async (req: Request, res: Response) => {
 router.patch("/:id", authBookingOwner, async (req: Request, res: Response) => {
     const id = Number(req.params.id);
     const {room, user, startTime, endTime} = req.body as BookingData;
-    const socketId = userSocketMap[user];
-
+    
     try {
         const available = await isRoomAvailable(room, new Date(startTime), new Date(endTime), id);
+        const socketId = userSocketMap[user];
 
         if (!available) {
             logger.warn(`An attempt to double book a room was made: Room#${room}, start: ${startTime}, end: ${endTime}`);
